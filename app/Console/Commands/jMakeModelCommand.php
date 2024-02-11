@@ -84,10 +84,12 @@ class ModelMakeCommand extends GeneratorCommand
                         }
                     ";
         }
+        
         $pos = strrpos($this->modalFile, '}', -1);
         //$f = str_replace('//relations',  $temp, $this->modalFile,);
         $f = substr_replace($this->modalFile, $temp . "\n}", $pos);
         File::put($this->modalPath, $f);
+        $this->modalFile = $f;
     }
     /**
      * Execute the console command.

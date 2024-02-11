@@ -1,4 +1,4 @@
-@extends('layouts.forntend')
+@extends('layouts.app')
 
 @section('content')
     <div id="wrapper"></div>
@@ -52,7 +52,8 @@
                 then: (data) => {
                     console.log(data.total);
                     return data.result.map((x) => [x.firstname, x.lastname, x.phonenumber, x.born, x.sex, x
-                        .city])
+                        .city
+                    ])
                 },
                 total: data => data.total
             },

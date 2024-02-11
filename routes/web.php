@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\PersonController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +16,12 @@ use Illuminate\Support\Facades\Route;
         Route::get('/', function () {
             return view('home');
         });
+         //Persons
+    Route::get('persons/', [PersonController::class, 'index'])->name('get.persons');
+    Route::get('persons/relation', [PersonController::class, 'relation'])->name('person.relation');
+    Route::get('persons/ajax_get_persons_list', [PersonController::class, 'ajax_get_persons_list'])->name('get.ajax_get_persons_list');
+
+    
     });
     Auth::routes();
 

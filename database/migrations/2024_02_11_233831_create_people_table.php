@@ -16,8 +16,10 @@ class CreatePeopleTable extends Migration
         Schema::create('people', function (Blueprint $table) {
             $table->id();
             
-$table->bigInteger('person_type_id');
-$table->bigInteger('city_id');
+$table->unsignedBigInteger('person_type_id')->defoult(0);
+$table->foreign('person_type_id')->references('id')->on('person_types');
+$table->unsignedBigInteger('city_id')->defoult(0);
+$table->foreign('city_id')->references('id')->on('cities');
 $table->string('firstname',30);
 $table->string('lastname',30);
 $table->string('phonenumber',50);

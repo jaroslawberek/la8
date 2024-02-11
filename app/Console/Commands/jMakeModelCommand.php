@@ -62,6 +62,7 @@ class ModelMakeCommand extends GeneratorCommand
         //$f = str_replace('//relations',  $temp, $this->modalFile,);
         $f = substr_replace($this->modalFile, $temp . "\n}", $pos);
         File::put($this->modalPath, $f);
+        dump($f);
     }
     public function createBelongs()
     {
@@ -88,6 +89,7 @@ class ModelMakeCommand extends GeneratorCommand
         $pos = strrpos($this->modalFile, '}', -1);
         //$f = str_replace('//relations',  $temp, $this->modalFile,);
         $f = substr_replace($this->modalFile, $temp . "\n}", $pos);
+        dump($f);
         File::put($this->modalPath, $f);
         $this->modalFile = $f;
     }

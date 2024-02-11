@@ -11,5 +11,9 @@ class City extends Model
 
     //relations
 
-
+public function person()
+                        {
+                            return $this->hasMany(person::class, 'city_id', 'id');
+                        }
+                    
 }

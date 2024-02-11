@@ -11,5 +11,9 @@ class Person_type extends Model
 
     //relations
 
-
+public function person()
+                        {
+                            return $this->hasMany(person::class, 'person_type_id', 'id');
+                        }
+                    
 }

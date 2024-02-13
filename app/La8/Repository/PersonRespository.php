@@ -2,14 +2,18 @@
 declare(strict_types= 1);
 namespace App\La8\Repository;
 
+use App\La8\Interfaces\IPersonRepository;
 use App\Models\Person;
 use Illuminate\Http\Request;
 
-
-
-class PersonRespository{
+class PersonRespository implements IPersonRepository{
 
     private $personModel;
+
+
+    public function get(){
+
+    }
 
     public function __construct(Person $personModel){
 
@@ -55,4 +59,16 @@ class PersonRespository{
 
         return $result;
     }
+
+    public function updatePerson(Request $request, Person $person){
+
+    }
+    public function deletePerson(Person $person){
+
+    }
+
+    public function storePerson(Request $request){
+
+    }
+   
 }

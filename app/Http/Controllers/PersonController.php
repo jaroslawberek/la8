@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Persons;
+//use App\Models\Persons;
 use App\Http\Controllers\Controller;
-use App\La8\Repository\PersonRespository;
+use App\La8\Interfaces\IPersonRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Person;
-use App\Models\Person_type;
-use Illuminate\Console\Application;
+//use App\Models\Person_type;
+//use Illuminate\Console\Application;
 use Illuminate\Support\Facades\App;
 
 class PersonController extends Controller
 {
 private $personRespository;
-    public function __construct(PersonRespository $personRespository){
-        $this->personRespository = $personRespository;
-        
+
+    public function __construct(IPersonRepository $pR){
+
+        $this->personRespository = $pR;        
     }
    
     public function index()
@@ -75,12 +76,11 @@ private $personRespository;
     public function ajax_get_persons_list(Request $request)
     {
 
-        return response($this->personRespository->getPersonsListAjax($request);)
+        return response($this->personRespository->getPersonsListAjax($request))
             ->setStatusCode(200)
             ->header('Content-Type', 'application/json');
 
     }
-
    
     public function create()
     {

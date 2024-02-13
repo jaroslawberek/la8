@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreatePeopleTable extends Migration
 {
@@ -15,7 +16,7 @@ class CreatePeopleTable extends Migration
     {
         Schema::create('people', function (Blueprint $table) {
             $table->id();
-            
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');          
 $table->unsignedBigInteger('person_type_id')->defoult(0);
 $table->foreign('person_type_id')->references('id')->on('person_types');
 $table->unsignedBigInteger('city_id')->defoult(0);
@@ -32,6 +33,7 @@ $table->string('photo',50)->nullable(true);
 
             $table->timestamps();
         });
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 
     /**

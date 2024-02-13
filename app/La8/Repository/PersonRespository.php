@@ -6,6 +6,7 @@ use App\Models\Person;
 use Illuminate\Http\Request;
 
 
+
 class PersonRespository{
 
     private $personModel;
@@ -13,10 +14,9 @@ class PersonRespository{
     public function __construct(Person $personModel){
 
         $this->personModel = $personModel;
-
+        
     }
     public function listPersons(Person $personModel){
-
     }
 
     public function getPersonsListAjax(Request $request){
@@ -54,6 +54,5 @@ class PersonRespository{
         )];
 
         return $result;
-
     }
 }

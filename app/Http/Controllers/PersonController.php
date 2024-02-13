@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Persons;
 use App\Http\Controllers\Controller;
+use App\La8\Repository\PersonRespository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Person;
@@ -13,11 +14,12 @@ use Illuminate\Support\Facades\App;
 
 class PersonController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+private $personRespository;
+    public function __construct(PersonRespository $personRespository){
+        $this->personRespository = $personRespository;
+        
+    }
+   
     public function index()
     {
         //$person_types = Person_type::with("Person")->get();
@@ -58,7 +60,6 @@ class PersonController extends Controller
                             CONSTRAINT_NAME <> 'PRIMARY'
                                 AND TABLE_SCHEMA = 'db_test'
                                 AND TABLE_NAME = 'people'");
-        // dump($belowTo);
 
         foreach ($belowTo as $row) {
             dump("public function {$row->REFERENCED_TABLE_NAME}()
@@ -73,74 +74,25 @@ class PersonController extends Controller
 
     public function ajax_get_persons_list(Request $request)
     {
-        $url = $request->url();
-        $persons = Person::with('city');
-        if (isset($request->search)) {
-            $persons = $persons->where('firstname', 'like', "%{$request->search}%");
-            $persons = $persons->orWhere('lastname', 'like', "%{$request->search}%");
-            $persons = $persons->orWhere('phonenumber', 'like', "%{$request->search}%");
-            $persons = $persons->orWhere('born', 'like', "%{$request->search}%");
-            $persons = $persons->orWhere('sex', 'like', "%{$request->search}%");
-            $persons = $persons->orWhereHas('city', function ($query) use ($request) {
-                $query->where('city_name', 'like', "%{$request->search}%");
-            });
-        }
-        $personCount = $persons->count();
-        if (isset($request->order) && ($request->dir)) {
-            $persons = $persons->orderBy($request->order, $request->dir);
-        }
-        if (isset($request->limit) && isset($request->offset)) {
 
-            $persons = $persons->take($request->limit)->skip($request->offset);
-        }
-        //dd($persons->get());
-        //dd($persons->toSql());
-        $result = ['total' => $personCount, 'result' => $persons->get()->transform(
-            function ($r) {
-                return [
-                    'firstname' => $r->firstname,
-                    'lastname' => $r->lastname,
-                    'phonenumber' => $r->phonenumber,
-                    'born' => $r->born,
-                    'sex' => $r->sex,
-                    'city' => $r->city->city_name,
-                ];
-            }
-        )];
-        //sleep(1);
-        //  dd($result);
-        return response($result)
+        return response($this->personRespository->getPersonsListAjax($request);)
             ->setStatusCode(200)
             ->header('Content-Type', 'application/json');
+
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+   
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Persons  $persons
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(Person $persons)
     {
         //

@@ -1,29 +1,49 @@
 <?php
-declare(strict_types= 1);
+
+declare(strict_types=1);
+
 namespace App\La8\Repository;
 
+use Illuminate\Support\Facades\DB;
 use App\La8\Interfaces\IPersonRepository;
 use App\Models\Person;
+use App\Models\Person_type;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-class PersonRespository implements IPersonRepository{
+class PersonRespository implements IPersonRepository
+{
 
     private $personModel;
 
 
-    public function get(){
-
+    public function get()
+    {
     }
 
-    public function __construct(Person $personModel){
+    public function __construct(Person $personModel)
+    {
 
         $this->personModel = $personModel;
-        
     }
-    public function listPersons(Person $personModel){
+    public function listPersons(Request $request)
+    {
+
+        $persons = DB::table('people')->select('people.id as person_id', 'firstname', 'lastname', 'born', 'sex', 'city_name', 'type_name')
+            //->select(DB::raw('count(*)as ile'), 'cities.id', 'city_name as misto')
+            ->join('cities', 'people.city_id', '=', 'cities.id')
+            ->join('person_types', 'people.person_type_id', '=', 'person_types.id');
+        //->groupBy('cities.id', 'cities.city_name')
+        //->having('ile', '>', '1')
+        // ->where('city_id',120);
+        //->orderBy('ile', 'asc');
+        // echo "<br>sql: " . $persons->toSql() . '<br>';
+        $persons =  $persons->paginate($request->limit ?? 3); //pamietac o tym samo $persons->get(); wywali pozniej w dd outof memory
+        return $persons;
     }
 
-    public function getPersonsListAjax(Request $request){
+    public function getPersonsListAjax(Request $request)
+    {
 
         $persons = $this->personModel::with('city');
         if (isset($request->search)) {
@@ -47,6 +67,7 @@ class PersonRespository implements IPersonRepository{
         $result = ['total' => $personCount, 'result' => $persons->get()->transform(
             function ($r) {
                 return [
+                    'id' => $r->id,
                     'firstname' => $r->firstname,
                     'lastname' => $r->lastname,
                     'phonenumber' => $r->phonenumber,
@@ -60,15 +81,34 @@ class PersonRespository implements IPersonRepository{
         return $result;
     }
 
-    public function updatePerson(Request $request, Person $person){
-
+    public function updatePerson(Request $request, Person $person)
+    {
+        $person->firstname = $request->firstname ?? $person->firstname;
+        $person->lastname = $request->lastname ?? $person->lastname;
+        $person->phonenumber = $request->phonenumber ?? $person->phonenumber;
+        $person->born = Carbon::parse($request->born) ?? $person->born;
+        $person->sex = $request->sex ?? $person->sex;
+        $person->pesel = $request->pesel ?? $person->pesel;
+        $person->email = $request->email ?? $person->email;
+        $person->city_id = $request->city_id ?? $person->city_id;
+        $person->person_type_id = $request->person_type_id ?? $person->person_type_id;
+        $person->save();
     }
-    public function deletePerson(Person $person){
-
+    public function deletePerson(Person $person)
+    {
     }
 
-    public function storePerson(Request $request){
-
+    public function storePerson(Request $request)
+    {
+        $this->personModel->firstname = $request->firstname;
+        $this->personModel->lastname = $request->lastname;
+        $this->personModel->phonenumber = $request->phonenumber;
+        $this->personModel->born = Carbon::parse($request->born);
+        $this->personModel->sex = $request->sex;
+        $this->personModel->pesel = $request->pesel;
+        $this->personModel->email = $request->email;
+        $this->personModel->city_id = $request->city_id;
+        $this->personModel->person_type_id = $request->person_type_id;
+        $this->personModel->save();
     }
-   
 }

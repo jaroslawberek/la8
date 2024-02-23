@@ -3,52 +3,40 @@
 namespace App\Http\Controllers;
 
 //use App\Models\Persons;
-use App\Http\Controllers\Controller;
-use App\La8\Interfaces\IPersonRepository;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use App\Models\City;
 use App\Models\Person;
+use App\Models\Person_type;
+use Illuminate\Http\Request;
+//use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\App;
 //use App\Models\Person_type;
 //use Illuminate\Console\Application;
-use Illuminate\Support\Facades\App;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\UpdatePersonReq;
+use App\La8\Interfaces\IPersonRepository;
 
 class PersonController extends Controller
 {
-private $personRespository;
+    private $personRespository;
 
-    public function __construct(IPersonRepository $pR){
-
-        $this->personRespository = $pR;        
-    }
-   
-    public function index()
+    public function __construct(IPersonRepository $pR)
     {
-        //$person_types = Person_type::with("Person")->get();
-       // dump($person_types);
-        // $persons = Person::where("id", 1)->get();
-        // dump($persons);
-        // $persons = DB::table('persons')
-        //     ->select(DB::raw('count(*)as ile'), 'cities.id', 'city_name as misto')
-        //     ->join('cities', 'persons.cities_id', '=', 'cities.id')
-        //     ->join('person_types', 'persons.person_types_id', '=', 'person_types.id')
-        //     ->groupBy('cities.id', 'cities.city_name')
-        //     ->having('ile', '>', '1')
-        //     //->where('cities_id',12)
-        //     ->orderBy('ile', 'asc');
-        // echo "<br>sql: " . $persons->toSql() . '<br>';
-        // $persons =  $persons->get(); //pamietac o tym samo $persons->get(); wywali pozniej w dd outof memory
-        // // echo "Count: " . $persons->count();
-        // echo "min: " . $persons->min('id');
-        // echo "max: " . $persons->max('id');
-        // echo "avg: " . $persons->avg('id');
+
+        $this->personRespository = $pR;
+    }
+
+    public function index(Request $request)
+    {
+        $filter = $request->all();
+        $people = $this->personRespository->listPersons($request);
+        $people->appends($filter);
+        return view('Persons.persons_list2')->with("people", $people)
+            ->with('filter', $filter);
 
 
-        // echo "<pre>";
-        //  dd(print_r($persons));
-        // dd($persons->toArray());
-
-
-         return view('Persons.persons_list');
+        // return view('Persons.persons_list')->with("people", $people);
     }
 
     public function relation()
@@ -79,17 +67,21 @@ private $personRespository;
         return response($this->personRespository->getPersonsListAjax($request))
             ->setStatusCode(200)
             ->header('Content-Type', 'application/json');
-
-    }
-   
-    public function create()
-    {
-        //
     }
 
-    public function store(Request $request)
+    public function create(Request $request)
     {
-        //
+        return view('Persons.person_add_form')
+            ->with("cities", City::all())
+            ->with("person_types", Person_type::all());
+    }
+
+    public function store(UpdatePersonReq $request)
+    {
+        $this->personRespository->storePerson($request);
+        return redirect()
+            ->route('get.persons')
+            ->with('message', 'Dodano prawidłowo');
     }
 
 
@@ -104,9 +96,13 @@ private $personRespository;
      * @param  \App\Models\Person  $persons
      * @return \Illuminate\Http\Response
      */
-    public function edit(Person $persons)
+    public function edit($person_id)
     {
-        //
+        $person = Person::find($person_id);
+        return view('persons.person_update_form')->with('form_fields', $person)
+            ->with('edycja', 'true')
+            ->with("cities", City::all())
+            ->with("person_types", Person_type::all());
     }
 
     /**
@@ -116,9 +112,13 @@ private $personRespository;
      * @param  \App\Models\Person  $persons
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Person $persons)
+    public function update($person_id, UpdatePersonReq $request)
     {
-        //
+        $person = Person::find($person_id);
+        $this->personRespository->updatePerson($request, $person);
+        return redirect()
+            ->route('get.persons')
+            ->with('message', 'Edytowano uzytkownika prawidłowo');
     }
 
     /**
@@ -130,5 +130,6 @@ private $personRespository;
     public function destroy(Person $persons)
     {
         //
+
     }
 }

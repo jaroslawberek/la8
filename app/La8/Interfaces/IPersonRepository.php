@@ -12,7 +12,7 @@ interface IPersonRepository{
     public function deletePerson(Person $person);
 
     public function storePerson(Request $request);
-    public function listPersons(Person $personModel);
+    public function listPersons(Request $request);
 
     public function getPersonsListAjax(Request $request);
     

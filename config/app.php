@@ -1,4 +1,6 @@
 <?php
+
+use App\Providers\jbCustomBladeDirectiveServiceProvider;
 use App\Providers\PersonServiceProvider;
 
 return [
@@ -176,6 +178,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         PersonServiceProvider::class,
+        jbCustomBladeDirectiveServiceProvider::class,
 
     ],
 

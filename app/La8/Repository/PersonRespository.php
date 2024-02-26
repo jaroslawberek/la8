@@ -33,12 +33,22 @@ class PersonRespository implements IPersonRepository
             //->select(DB::raw('count(*)as ile'), 'cities.id', 'city_name as misto')
             ->join('cities', 'people.city_id', '=', 'cities.id')
             ->join('person_types', 'people.person_type_id', '=', 'person_types.id');
-        //->groupBy('cities.id', 'cities.city_name')
+        if ($request->firstname != "")
+            $persons = $persons->where('firstname', 'like', "{$request->firstname}%");
+        if ($request->lastname != "")
+            $persons = $persons->where('lastname', 'like', "{$request->lastname}%");
+        if ($request->born != "")
+            $persons = $persons->where('born', 'like', "{$request->born}%");
+        if ($request->sex != "")
+            $persons = $persons->where('sex', 'like', "{$request->sex}%");
+        if ($request->city_name != "")
+            $persons = $persons->where('city_name', 'like', "{$request->city_name}%");
+        if ($request->type_name != "")
+            $persons = $persons->where('type_name', 'like', "{$request->type_name}%");
         //->having('ile', '>', '1')
-        // ->where('city_id',120);
         //->orderBy('ile', 'asc');
         // echo "<br>sql: " . $persons->toSql() . '<br>';
-        $persons =  $persons->paginate($request->limit ?? 3); //pamietac o tym samo $persons->get(); wywali pozniej w dd outof memory
+        $persons =  $persons->paginate($request->limit ?? 5); //pamietac o tym samo $persons->get(); wywali pozniej w dd outof memory
         return $persons;
     }
 
@@ -80,7 +90,6 @@ class PersonRespository implements IPersonRepository
 
         return $result;
     }
-
     public function updatePerson(Request $request, Person $person)
     {
         $person->firstname = $request->firstname ?? $person->firstname;
